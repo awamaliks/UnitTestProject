@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using NUnit.Framework;
 using ProductApi.Controllers;
 using ProductApi.Data;
 using ProductApi.Models;
@@ -17,74 +18,78 @@ namespace UnitTestProject.Test
 {
     public class ProductIntegrationTest
     {
-        private readonly AppDbContext _context;
-        private readonly ProductService _productService;
-        private readonly ProductController _controller;
+        private AppDbContext _context;
+        private ProductService _productService;
+        private ProductController _controller;
 
-        public ProductIntegrationTest()
+        [SetUp]
+        public void Setup()
         {
-             var configuration = new ConfigurationBuilder()
+            var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
 
             _context = new AppDbContext(configuration);
 
-            // OPTIONAL: Reset database state for clean test
+            // Reset and seed database
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
 
-            // Seed data
             SeedProducts();
 
-            //bool canConnect = _context.Database.CanConnect();           
             _productService = new ProductService(_context);
             _controller = new ProductController(_productService);
         }
 
-        [Fact]
+        [Test]
         public void AddProduct_ShouldAddProductToDatabase()
         {
             // Arrange
-            var newProduct = new Product { ProductName = "Smartwatch", ProductDescription="This is smart Watch", ProductPrice = 20000 };
+            var newProduct = new Product
+            {
+                ProductName = "Smartwatch",
+                ProductDescription = "This is smart Watch",
+                ProductPrice = 20000
+            };
 
             // Act
             var result = _controller.AddProduct(newProduct);
 
-            // Assert           
-                var product = _context.Products.OrderByDescending(p => p.ProductId == result.ProductId).FirstOrDefault();
-                Assert.NotNull(product);
-                Assert.Equal("Smartwatch", product.ProductName);
-            
+            // Assert
+            var product = _context.Products
+                .OrderByDescending(p => p.ProductId == result.ProductId)
+                .FirstOrDefault();
+
+            Assert.That(product, Is.Not.Null);
+            Assert.That(product.ProductId, Is.EqualTo(newProduct.ProductId));
         }
 
-        [Fact]
+        [Test]
         public void GetProductList_ProductList()
         {
-            // act
+            // Act
             var result = _controller.ProductList();
 
-            // assert
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count()); // Match with seeded data
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Count(), Is.EqualTo(3));
         }
 
-
-        [Fact]
+        [Test]
         public void GetProductByID_Product()
         {
             // Act
             var result = _controller.GetProductById(2);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(2, result.ProductId);
-            Assert.Equal("Laptop", result.ProductName);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.ProductId, Is.EqualTo(2));
+            Assert.That(result.ProductName, Is.EqualTo("Laptop"));
         }
 
-        [Theory]
-        [InlineData("IPhone")]
-        [InlineData("Laptop")]
-        [InlineData("TV")]
+        [TestCase("IPhone")]
+        [TestCase("Laptop")]
+        [TestCase("TV")]
         public void CheckProductExistOrNotByProductName_Product(string productName)
         {
             // Act
@@ -92,37 +97,35 @@ namespace UnitTestProject.Test
             var match = products.Any(p => p.ProductName == productName);
 
             // Assert
-            Assert.True(match, $"Product with name '{productName}' should exist.");
+            Assert.That(match, Is.True, $"Product with name '{productName}' should exist.");
         }
+
         private void SeedProducts()
         {
             _context.Products.AddRange(new List<Product>
-        {
-            new Product
             {
-                
-                ProductName = "IPhone",
-                ProductDescription = "IPhone 12",
-                ProductPrice = 55000,
-                ProductStock = 10
-            },
-            new Product
-            {
-              
-                ProductName = "Laptop",
-                ProductDescription = "HP Pavilion",
-                ProductPrice = 100000,
-                ProductStock = 20
-            },
-            new Product
-            {
-              
-                ProductName = "TV",
-                ProductDescription = "Samsung Smart TV",
-                ProductPrice = 35000,
-                ProductStock = 30
-            }
-        });
+                new Product
+                {
+                    ProductName = "IPhone",
+                    ProductDescription = "IPhone 12",
+                    ProductPrice = 55000,
+                    ProductStock = 10
+                },
+                new Product
+                {
+                    ProductName = "Laptop",
+                    ProductDescription = "HP Pavilion",
+                    ProductPrice = 100000,
+                    ProductStock = 20
+                },
+                new Product
+                {
+                    ProductName = "TV",
+                    ProductDescription = "Samsung Smart TV",
+                    ProductPrice = 35000,
+                    ProductStock = 30
+                }
+            });
 
             _context.SaveChanges();
         }
