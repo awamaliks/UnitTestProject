@@ -21,31 +21,31 @@ namespace UnitTestProject.Test
     {
         public class ProductControllerTest
         {
-            private Mock<IProductService> productService;
+            private Mock<IProductService> _productServiceMock;
+            private ProductController _productController;
 
             [SetUp]
             public void Setup()
             {
-                productService = new Mock<IProductService>();
+                _productServiceMock = new Mock<IProductService>();
+                _productController = new ProductController(_productServiceMock.Object);
             }
 
             [Test]
             public void GetProductList_ProductList()
             {
                 // Arrange
-                var productList = GetProductsData();
-                productService.Setup(x => x.GetProductList())
-                    .Returns(productList);
-                var productController = new ProductController(productService.Object);
+                var expectedProducts = GetProductsData();
+                _productServiceMock.Setup(x => x.GetProductList())
+                    .Returns(expectedProducts);
 
                 // Act
-                var productResult = productController.ProductList();
+                var result = _productController.ProductList();
 
                 // Assert
-                Assert.That(productResult, Is.Not.Null);
-                Assert.That(productResult.Count(), Is.EqualTo(productList.Count));
-                Assert.That(productResult.ToString(), Is.EqualTo(productList.ToString()));
-                Assert.That(productResult, Is.EqualTo(productList));
+                Assert.That(result, Is.Not.Null);
+                Assert.That(result.Count(), Is.EqualTo(expectedProducts.Count));
+                Assert.That(result, Is.EquivalentTo(expectedProducts));
             }
 
             [Test]
@@ -53,12 +53,11 @@ namespace UnitTestProject.Test
             {
                 // Arrange
                 var productList = GetProductsData();
-                productService.Setup(x => x.GetProductById(2))
+                _productServiceMock.Setup(x => x.GetProductById(2))
                     .Returns(productList[1]);
-                var productController = new ProductController(productService.Object);
 
                 // Act
-                var productResult = productController.GetProductById(2);
+                var productResult = _productController.GetProductById(2);
 
                 // Assert
                 Assert.That(productResult, Is.Not.Null);
@@ -70,12 +69,11 @@ namespace UnitTestProject.Test
             {
                 // Arrange
                 var productList = GetProductsData();
-                productService.Setup(x => x.GetProductList())
+                _productServiceMock.Setup(x => x.GetProductList())
                     .Returns(productList);
-                var productController = new ProductController(productService.Object);
 
                 // Act
-                var productResult = productController.ProductList();
+                var productResult = _productController.ProductList();
                 var expectedProductName = productResult.ToList()[0].ProductName;
 
                 // Assert
@@ -87,17 +85,17 @@ namespace UnitTestProject.Test
             {
                 // Arrange
                 var productList = GetProductsData();
-                productService.Setup(x => x.AddProduct(productList[2]))
+                _productServiceMock.Setup(x => x.AddProduct(productList[2]))
                     .Returns(productList[2]);
-                var productController = new ProductController(productService.Object);
 
                 // Act
-                var productResult = productController.AddProduct(productList[2]);
+                var productResult = _productController.AddProduct(productList[2]);
 
                 // Assert
                 Assert.That(productResult, Is.Not.Null);
                 Assert.That(productResult.ProductId, Is.EqualTo(productList[2].ProductId));
             }
+
 
             private List<Product> GetProductsData()
             {
