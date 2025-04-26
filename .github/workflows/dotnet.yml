@@ -23,6 +23,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore UnitTestProject
     - name: Build
-      run: dotnet build UnitTestProject --no-restore
+      run: dotnet build ./UnitTestProject.Test/UnitTestProject.Test.csproj --no-restore
     - name: Test
       run: dotnet test ./UnitTestProject.Test/UnitTestProject.Test.csproj --no-build --verbosity normal
