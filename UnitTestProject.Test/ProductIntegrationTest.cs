@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace UnitTestProject.Test
 {
+    [Category("Integration")]
     public class ProductIntegrationTest
     {
         private AppDbContext _context;
@@ -42,6 +43,7 @@ namespace UnitTestProject.Test
         }
 
         [Test]
+
         public void AddProduct_ShouldAddProductToDatabase()
         {
             // Arrange
