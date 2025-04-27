@@ -31,6 +31,6 @@ jobs:
       if: always()
       with:
         name: test-results
-        trx_files: /home/runner/work/UnitTestProject/UnitTestProject/UnitTestProject.Test/TestResults/xtest.trx
+        trx_files: /home/runner/work/UnitTestProject/UnitTestProject/TestResults/xtest.trx
         run: ls -R UnitTestProject/UnitTestProject.Test/TestResults
           
