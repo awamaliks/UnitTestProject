@@ -57,7 +57,7 @@ namespace UnitTestProject.Test
                     .Returns(productList[1]);
 
                 // Act
-                var productResult = _productController.GetProductById(1);
+                var productResult = _productController.GetProductById(2);
 
                 // Assert
                 Assert.That(productResult, Is.Not.Null);
