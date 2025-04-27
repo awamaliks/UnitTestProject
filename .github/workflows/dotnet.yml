@@ -31,5 +31,5 @@ jobs:
       if: always()
       with:
         name: test-results
-        path: UnitTestProject/UnitTestProject.Test/TestResults/xtest.trx
+        trx_files: UnitTestProject/UnitTestProject.Test/TestResults/xtest.trx
           
