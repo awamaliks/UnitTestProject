@@ -8,7 +8,11 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
+    
+permissions:
+  checks: write
+  contents: read
+  
 jobs:
   build:
 
@@ -25,4 +29,10 @@ jobs:
     - name: Build
       run: dotnet build UnitTestProject --no-restore
     - name: Test
-      run: dotnet test ./UnitTestProject.Test/UnitTestProject.Test.csproj --filter "TestCategory!=Integration" --verbosity normal
+      run: dotnet test ./UnitTestProject.Test/UnitTestProject.Test.csproj --filter "TestCategory!=Integration" --verbosity normal --logger "trx;LogFileName=xtest.trx" --results-directory "TestResults"
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:       
+        trx_files: /home/runner/work/UnitTestProject/UnitTestProject/TestResults/xtest.trx       
+          
