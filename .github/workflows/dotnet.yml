@@ -29,7 +29,6 @@ jobs:
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
-      with:
-        name: test-results
+      with:       
         trx_files: /home/runner/work/UnitTestProject/UnitTestProject/TestResults/xtest.trx       
           
