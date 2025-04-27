@@ -21,7 +21,7 @@ namespace ProductApi.Controllers
             return productList;
         }
         [HttpGet("getproductbyid")]
-        public Product GetProductById(int Id)
+        public Product GetProductById(int Id,int idd)
         {
             return productService.GetProductById(Id);
         }
