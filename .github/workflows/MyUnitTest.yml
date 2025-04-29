@@ -8,11 +8,7 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-    
-permissions:
-  checks: write
-  contents: read
-  
+
 jobs:
   build:
 
@@ -20,19 +16,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+        
     - name: Restore dependencies
       run: dotnet restore UnitTestProject
+      
     - name: Build
       run: dotnet build UnitTestProject --no-restore
+      
     - name: Test
-      run: dotnet test ./UnitTestProject.Test/UnitTestProject.Test.csproj --filter "TestCategory!=Integration" --verbosity normal --logger "trx;LogFileName=xtest.trx" --results-directory "TestResults"
-    - name: Publish Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:       
-        trx_files: /home/runner/work/UnitTestProject/UnitTestProject/TestResults/xtest.trx       
-          
+      run: dotnet test ./UnitTestProject.Test/UnitTestProject.Test.csproj --filter "Category!=Integration"  --verbosity normal
