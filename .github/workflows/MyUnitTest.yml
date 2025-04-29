@@ -29,4 +29,4 @@ jobs:
       run: dotnet build UnitTestProject --no-restore
       
     - name: Test
-      run: dotnet test ./UnitTestProject.Test/UnitTestProject.Test.csproj --filter "Category!=Integration" --no-build --verbosity normal
+      run: dotnet test ./UnitTestProject.Test/UnitTestProject.Test.csproj --filter "Category!=Integration"  --verbosity normal
